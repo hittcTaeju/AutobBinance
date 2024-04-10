@@ -3,14 +3,6 @@ import pandas as pd
 import math
 
 
-f = open("./binance.key")
-lines = f.readlines()
-api_key = lines[0].strip()
-secret = lines[1].strip()
-f.close()
-symbol = "BTC/USDT"
-
-
 def cal_target(binance,symbol):
     # 목표가격 계산
     btc_ohlcv = binance.fetch_ohlcv(
@@ -30,22 +22,25 @@ def cal_target(binance,symbol):
     long_target = today['open'] + (yesterday['high'] - yesterday['low']) * 0.5
     short_target = today['open'] - (yesterday['high'] - yesterday['low']) * 0.5
     return (long_target,short_target)
-def cal_amount(usdt_balance,cur_price):
-    portion = 0.1
-    usdt_trade = usdt_balance*portion
+def cal_amount(usdt_balance,cur_price,leverage):
+    portion = 0.5
+    usdt_trade = usdt_balance*portion*leverage
     amount = math.floor((usdt_trade*1000000)/cur_price)/1000000
     return amount
 def enter_position(binance,symbol,cur_price,long_target,short_target,amount,position):
     if cur_price>long_target:#롱 진입
         position['type'] = 'long'
         position['amount'] = amount
-        binance.create_market_buy_order(symbol=symbol,amount=amount)
         print("ENTER LONG")
+        #print(symbol)
+        binance.create_market_buy_order(symbol=symbol,amount=amount)
+
     elif cur_price<short_target: #숏진입
         position['type'] = 'short'
         position['amount'] = amount
-        binance.create_market_sell_order(symbol=symbol,amount=amount)
         print("ENTER SHORT")
+        binance.create_market_sell_order(symbol=symbol,amount=amount)
+
     return position
 def exit_position(binance,symbol,position):
     amount = position['amount']

@@ -1,6 +1,9 @@
-# Position
+import datetime
+import time
+import pandas as pd
 import ccxt
 import pprint
+import larry1
 
 # API 정보 파일 열기
 f = open("./binance.key")
@@ -17,8 +20,5 @@ binance = ccxt.binance(config={
         'defaultType': 'future'
     }
 })
-
-# # buy
-# symbol = "BTCUSDT"
-# positions = exchange.fetch_positions(symbols=[symbol])
-# pprint.pprint(positions[0]['info']['positionAmt'])
+symbol = "BTC/USDT"
+long_target, short_target = larry1.cal_target(binance, symbol)

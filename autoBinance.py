@@ -21,10 +21,12 @@ binance = ccxt.binance(config={
     }
 })
 symbol = "BTC/USDT"
+leverage=10
 position = {
     'type' :None,
     'amount' : 0
 }
+
 
 op_mode =True
 #if now.hour == 12 and now.minute == and (20 <= now.second < 30):  # 목표가 갱신
@@ -44,10 +46,12 @@ while True:
     #current price, 구매 가능 수량
     btc =binance.fetch_ticker(symbol=symbol)
     cur_price = btc['last']
-    amount =larry1.cal_amount(usdt,cur_price)
+    amount =larry1.cal_amount(usdt,cur_price,leverage)
+    #print(amount)
 
     if op_mode and position['type'] is None:#진입
         position=larry1.enter_position(binance,symbol,cur_price,long_target,short_target,amount,position)
+        #break
 
     print(now,cur_price,'long target: ',long_target,'short target: ',short_target,position)
     time.sleep(1)
